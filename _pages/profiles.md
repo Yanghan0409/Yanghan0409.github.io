@@ -1,7 +1,7 @@
 ---
 layout: profiles
 permalink: /advisors/
-title: advisors
+title: Advisors
 description: My advisors
 nav: true
 nav_order: 8
