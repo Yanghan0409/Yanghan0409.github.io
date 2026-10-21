@@ -1,8 +1,8 @@
 ---
 layout: profiles
 permalink: /advisors/
-title: Advisors
-description: My advisors
+title: Supervisors
+description: My supervisors
 nav: true
 nav_order: 8
 
