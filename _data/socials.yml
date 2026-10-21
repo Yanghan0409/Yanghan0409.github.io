@@ -4,8 +4,8 @@
 email: chyanghan@ust.hk # your email address
 github_username: Yanghan0409 # your GitHub username
 linkedin_username: "%E6%B6%B5-%E6%9D%A8-80784b39b" # your LinkedIn public identifier (URL-encoded)
-rss_icon: true # comment this line to hide the RSS icon
 scholar_userid: IxjLQ-sAAAAJ # your Google Scholar ID
+# rss_icon: true # comment to hide the RSS icon
 # cv_pdf: /assets/pdf/cv.pdf # path to your CV PDF file
 # x_username: your-x-username # your X (Twitter) username
 # wechat_username: your-wechat-username
