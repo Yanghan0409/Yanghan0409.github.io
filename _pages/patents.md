@@ -8,62 +8,31 @@ nav_order: 6
 
 ## Patents
 
-<div class="row row-cols-1 row-cols-md-2 g-4">
+<div class="row row-cols-2 row-cols-md-5 g-3">
   <div class="col">
-    <div class="card h-100 shadow-sm">
-      {% include figure.liquid loading="eager" path="assets/img/patent_cn120904216.jpg" title="专利证书" class="img-fluid rounded-top" %}
-      <div class="card-body">
-        <h5 class="card-title">一种近红外光热分子及其制备方法和在光响应聚酰亚胺材料中的应用</h5>
-        <p class="card-text text-muted mb-1">CN 120904216 B &nbsp;·&nbsp; 已授权</p>
-        <p class="card-text text-muted small">专利权人：香港中文大学（深圳）</p>
-      </div>
-    </div>
+    {% include figure.liquid loading="eager" path="assets/img/patent_cn120904216.jpg" title="CN 120904216 B" class="img-fluid rounded shadow-sm" %}
   </div>
-
   <div class="col">
-    <div class="card h-100 shadow-sm">
-      {% include figure.liquid loading="eager" path="assets/img/patent_cn119708007.jpg" title="专利证书" class="img-fluid rounded-top" %}
-      <div class="card-body">
-        <h5 class="card-title">一种近红外发射聚集诱导发光的有机光热分子及其制备方法与应用</h5>
-        <p class="card-text text-muted mb-1">CN 119708007 B &nbsp;·&nbsp; 已授权</p>
-        <p class="card-text text-muted small">专利权人：香港中文大学（深圳）</p>
-      </div>
-    </div>
+    {% include figure.liquid loading="eager" path="assets/img/patent_cn119708007.jpg" title="CN 119708007 B" class="img-fluid rounded shadow-sm" %}
   </div>
-
   <div class="col">
-    <div class="card h-100 shadow-sm">
-      {% include figure.liquid loading="eager" path="assets/img/patent_us19406396.jpg" title="US patent filing receipt" class="img-fluid rounded-top" %}
-      <div class="card-body">
-        <h5 class="card-title">Near-Infrared Aggregation-Induced Emission Organic Photothermal Molecule and Preparation Method Thereof and Application</h5>
-        <p class="card-text text-muted mb-1">US 19/406,396 &nbsp;·&nbsp; Filed</p>
-        <p class="card-text text-muted small">Priority: CN 202510199792.8</p>
-      </div>
-    </div>
+    {% include figure.liquid loading="eager" path="assets/img/patent_us19406396.jpg" title="US 19/406,396" class="img-fluid rounded shadow-sm" %}
   </div>
-
   <div class="col">
-    <div class="card h-100 shadow-sm">
-      {% include figure.liquid loading="eager" path="assets/img/patent_cn120904215.jpg" title="专利证书" class="img-fluid rounded-top" %}
-      <div class="card-body">
-        <h5 class="card-title">一种聚集诱导发光的近红外光热分子及其制备方法和应用</h5>
-        <p class="card-text text-muted mb-1">CN 120904215 B &nbsp;·&nbsp; 已授权</p>
-        <p class="card-text text-muted small">专利权人：香港中文大学（深圳）</p>
-      </div>
-    </div>
+    {% include figure.liquid loading="eager" path="assets/img/patent_cn120904215.jpg" title="CN 120904215 B" class="img-fluid rounded shadow-sm" %}
   </div>
-
   <div class="col">
-    <div class="card h-100 shadow-sm">
-      {% include figure.liquid loading="eager" path="assets/img/patent_cn108771659.jpg" title="专利证书" class="img-fluid rounded-top" %}
-      <div class="card-body">
-        <h5 class="card-title">一种吲哚菁绿荧光示踪的反式茴香脑-白蛋白纳米颗粒的制备方法</h5>
-        <p class="card-text text-muted mb-1">CN 108771659 B &nbsp;·&nbsp; 已授权</p>
-        <p class="card-text text-muted small">专利权人：天津大学</p>
-      </div>
-    </div>
+    {% include figure.liquid loading="eager" path="assets/img/patent_cn108771659.jpg" title="CN 108771659 B" class="img-fluid rounded shadow-sm" %}
   </div>
 </div>
+
+<ol>
+  <li><strong>一种近红外光热分子及其制备方法和在光响应聚酰亚胺材料中的应用</strong> — CN 120904216 B（已授权）· 香港中文大学（深圳）</li>
+  <li><strong>一种近红外发射聚集诱导发光的有机光热分子及其制备方法与应用</strong> — CN 119708007 B（已授权）· 香港中文大学（深圳）</li>
+  <li><strong>Near-Infrared Aggregation-Induced Emission Organic Photothermal Molecule and Preparation Method Thereof and Application</strong> — US 19/406,396 · 已申请</li>
+  <li><strong>一种聚集诱导发光的近红外光热分子及其制备方法和应用</strong> — CN 120904215 B（已授权）· 香港中文大学（深圳）</li>
+  <li><strong>一种吲哚菁绿荧光示踪的反式茴香脑-白蛋白纳米颗粒的制备方法</strong> — CN 108771659 B（已授权）· 天津大学</li>
+</ol>
 
 ## Other Patent Applications
 
