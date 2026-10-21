@@ -74,6 +74,40 @@ cv:
         highlights:
           - Studied factors affecting the vegetative propagation of lilac, focusing on the effects of plant hormones and inorganic salts on seed, bud, and stem tissue-culture propagation.
 
+    Awards:
+      - title: 优秀论文二等奖（第十三届迈达青年论坛）
+        date: 2019
+        awarder: 天津市生物医学工程学会
+      - title: 国家奖学金
+        date: 2020
+      - title: 博士一等奖学金
+        date: 2020
+      - title: 校三好学生
+        date: 2020
+      - title: 会员
+        date: 2023
+        awarder: 阿兹海默症防治协会
+      - title: 邀请报告 — The 5th Asian Conference on Chemosensors and Imaging Probes (Asian-CHIP)
+        date: 2025
+
+    Patents:
+      - title: 一种近红外光热分子及其制备方法和在光响应聚酰亚胺材料中的应用
+        summary: CN 120904216B（已授权）
+      - title: 一种近红外发射聚集诱导发光的有机光热分子及其制备方法与应用
+        summary: CN 119708007B（已授权）
+      - title: Near-Infrared Aggregation-Induced Emission Organic Photothermal Molecule and Preparation Method Thereof and Application
+        summary: US 19/406,396
+      - title: 具有聚集诱导的近红外光热分子发光及其制备方法和应用
+        summary: 2025109725758
+      - title: 一种吲哚菁绿荧光示踪的反式茴香脑-白蛋白纳米颗粒的制备方法
+        summary: CN 108771659B（已授权）
+      - title: 多种阿兹海默治疗药物共载的白蛋白纳米探针及制备方法
+        summary: 201910005104.4
+      - title: 多功能特异性DNA杂化-门控介孔二氧化硅基因载体的制备方法及应用
+        summary: 201910177101.9
+      - title: 一种多功能铁杂化介孔二氧化硅纳米载体的制备方法
+        summary: 202010028058.2
+
     Languages:
       - name: Chinese
         summary: Native
