@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>济州岛 4 天 3 晚 行程地图</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  #map { width: 100%; height: 100vh; }
+
+  /* 地点名常显标签 */
+  .point-label {
+    background: rgba(255, 255, 255, 0.88);
+    color: #222;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    text-align: center;
+  }
+
+  /* 景点标记 */
+  .spot-marker {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  /* 住宿标记 - 紫色方块 */
+  .hotel-marker {
+    width: 30px;
+    height: 30px;
+    background: #7a5cd6;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    transform: rotate(45deg);
+    border-radius: 4px;
+  }
+  .hotel-marker span {
+    transform: rotate(-45deg);
+    display: inline-block;
+  }
+
+  /* 图例面板 */
+  .legend-panel {
+    background: rgba(255, 255, 255, 0.96);
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 13px;
+    line-height: 1.9;
+    min-width: 150px;
+  }
+  .legend-panel h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+  }
+  .legend-row { display: flex; align-items: center; gap: 8px; }
+  .legend-icon {
+    width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0;
+  }
+  .legend-icon.spot { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+  .legend-icon.hotel {
+    background: #7a5cd6; transform: rotate(45deg); border-radius: 2px;
+    border: 1.5px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  .legend-icon.hotel span { transform: rotate(-45deg); display: inline-block; font-size: 8px; }
+  .legend-line { width: 22px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+  .legend-text { flex: 1; }
+
+  /* popup 样式 */
+  .leaflet-popup-content-wrapper { border-radius: 8px; }
+  .leaflet-popup-content { margin: 12px 14px; font-size: 13px; line-height: 1.6; min-width: 160px; }
+  .leaflet-popup-content h3 {
+    margin: 0 0 6px 0; font-size: 15px; color: #333;
+    border-bottom: 2px solid #7a5cd6; padding-bottom: 4px; display: inline-block;
+  }
+  .popup-meta { color: #666; font-size: 12px; margin-bottom: 6px; }
+  .popup-desc { color: #333; }
+
+  /* 标题横幅 */
+  .map-title {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; background: rgba(255, 255, 255, 0.95);
+    padding: 8px 20px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 16px; font-weight: 700; color: #333; white-space: nowrap;
+  }
+  .map-title .sub { font-size: 12px; font-weight: 400; color: #7a5cd6; margin-left: 8px; }
+
+  /* 移动端适配 */
+  @media (max-width: 600px) {
+    .map-title { font-size: 14px; padding: 6px 14px; top: 6px; }
+    .map-title .sub { display: none; }
+    .legend-panel { font-size: 11px; padding: 6px 10px; min-width: 110px; }
+    .legend-panel h4 { font-size: 12px; }
+    .point-label { font-size: 10px; padding: 1px 4px; }
+  }
+
+  /* MarkerCluster 紫色主题 */
+  .marker-cluster { background-clip: padding-box; border-radius: 20px; }
+  .marker-cluster div {
+    background-color: rgba(122, 92, 214, 0.6);
+    width: 30px; height: 30px; margin-left: 5px; margin-top: 5px;
+    text-align: center; border-radius: 15px;
+    color: #fff; font-weight: bold; font: 12px "Helvetica Neue", Arial, sans-serif;
+  }
+  .marker-cluster span { line-height: 30px; }
+  .marker-cluster-small { background-color: rgba(122, 92, 214, 0.4); }
+  .marker-cluster-medium { background-color: rgba(122, 92, 214, 0.5); }
+  .marker-cluster-large { background-color: rgba(122, 92, 214, 0.6); }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class="map-title">🗺 济州岛 4 天 3 晚 行程<span class="sub">Jeju Itinerary</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script>
+/* ==================== 常显标签（先定义，供后面调用） ==================== */
+function addLabel(marker, name) {
+  marker.bindTooltip(name, {
+    permanent: true,
+    direction: 'right',
+    offset: [16, 0],
+    className: 'point-label'
+  });
+}
+
+/* ==================== 初始化地图 ==================== */
+var map = L.map('map', {
+  center: [33.42, 126.58],
+  zoom: 11,
+  minZoom: 9,
+  maxZoom: 18,
+  zoomControl: true
+});
+
+/* ==================== 底图图层 ==================== */
+var baseMaps = {};
+
+var amapRoad = L.tileLayer(
+  'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+  { subdomains: ['1','2','3','4'], attribution: '© 高德地图', maxZoom: 18 }
+);
+baseMaps['高德 · 路网'] = amapRoad;
+
+var amapSat = L.tileLayer(
+  'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+  { subdomains: ['1','2','3','4'], attribution: '© 高德地图', maxZoom: 18 }
+);
+baseMaps['高德 · 卫星'] = amapSat;
+
+var esriSat = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  { attribution: '© Esri World Imagery', maxZoom: 19 }
+);
+baseMaps['Esri · 卫星'] = esriSat;
+
+var esriTopo = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+  { attribution: '© Esri World Topographic Map', maxZoom: 19 }
+);
+baseMaps['Esri · 地形'] = esriTopo;
+
+amapRoad.addTo(map);
+
+/* ==================== 自定义图标 ==================== */
+function makeSpotIcon(color) {
+  return L.divIcon({
+    className: '',
+    html: '<div class="spot-marker" style="background:' + color + '">★</div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -12]
+  });
+}
+
+function makeHotelIcon() {
+  return L.divIcon({
+    className: '',
+    html: '<div class="hotel-marker"><span>🛏</span></div>',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -16]
+  });
+}
+
+/* ==================== 颜色映射 ==================== */
+var colorMap = {
+  '深红': '#8b0000',
+  '蓝': '#1f77b4',
+  '橙': '#e67e22',
+  '红': '#d62728',
+  '紫': '#7a5cd6',
+  '绿': '#2ca02c',
+  '棕': '#8b5a2b'
+};
+
+/* ==================== MarkerCluster ==================== */
+var markers = L.markerClusterGroup({
+  showCoverageOnHover: false,
+  maxClusterRadius: 50,
+  spiderfyOnMaxZoom: true,
+  animate: true
+});
+
+/* ==================== 住宿地点 ==================== */
+var hotels = [
+  {
+    name: '济州市区・莲洞',
+    lat: 33.4988, lng: 126.5250,
+    day: 'D1 周四 / D3 周六',
+    desc: '第1晚、第3晚住宿 · 莲洞商圈，近新罗免税店、宝健路'
+  },
+  {
+    name: '西归浦・偶来市场',
+    lat: 33.2492, lng: 126.5633,
+    day: 'D2 周五',
+    desc: '第2晚住宿 · 偶来市场旁，方便吃海鲜逛夜市'
+  },
+  {
+    name: '表善面（南海岸中转）',
+    lat: 33.3260, lng: 126.8340,
+    day: 'D2 可选住宿',
+    desc: '涉地可支→西归浦中间的海景住宿带 · 海比奇度假村/民宿，D2玩完东线住这，D3往西更顺'
+  },
+  {
+    name: '济州机场附近',
+    lat: 33.5035, lng: 126.4750,
+    day: 'D4 周日',
+    desc: '第4晚住宿 · 近机场，方便周一早班机返程'
+  },
+  {
+    name: 'Nueve 泳池别墅',
+    lat: 33.4318, lng: 126.4292,
+    day: '涯月邑 · 泳池海景',
+    desc: '人均300元/晚 · 离市区约20分钟 · 工业风设计，泳池+无敌海景'
+  }
+];
+
+hotels.forEach(function(h) {
+  var m = L.marker([h.lat, h.lng], { icon: makeHotelIcon() });
+  m.bindPopup(
+    '<h3>' + h.name + '</h3>' +
+    '<div class="popup-meta">🛏 住宿 · ' + h.day + '</div>' +
+    '<div class="popup-desc">' + h.desc + '</div>'
+  );
+  addLabel(m, h.name);
+  markers.addLayer(m);
+});
+
+/* ==================== 景点 ==================== */
+var spots = [
+  { name: '济州国际机场', lat: 33.5113, lng: 126.4929,
+    color: '深红', day: 'D1 周四抵达 / D5 周一返程', desc: '抵达 & 离境 · 机场取还车' },
+  { name: '咸德海水浴场', lat: 33.5431, lng: 126.6696,
+    color: '蓝', day: 'D2 周五 10:00', desc: '东线第一站 · 海女包饭午餐，果冻海拍照' },
+  { name: '月汀里 MouMoon', lat: 33.5564, lng: 126.7956,
+    color: '蓝', day: 'D2 周五 13:00', desc: '月汀里海边咖啡厅 · 白色沙滩 + 绿松石色海水' },
+  { name: '涉地可支', lat: 33.4235, lng: 126.9293,
+    color: '蓝', day: 'D2 周五 16:15', desc: '海岸栈道 + 灯塔 · 看日落，All in House 打卡' },
+  { name: '柱状节理带', lat: 33.2370, lng: 126.4249,
+    color: '橙', day: 'D3 周六 10:30', desc: '大自然鬼斧神工 · 门票 2,000 韩元' },
+  { name: '龙头岩', lat: 33.5169, lng: 126.5120,
+    color: '橙', day: 'D3 周六（可选）', desc: '济州市区标志性景点 · 形似巨龙的火山岩' },
+  { name: '黑猪肉一条街', lat: 33.5140, lng: 126.5240,
+    color: '橙', day: 'D3 周六 17:30', desc: '晚餐 · 济州黑猪肉烤肉，推荐"豚舍"或"济州石"' },
+  { name: '东门市场', lat: 33.5090, lng: 126.5285,
+    color: '橙', day: '夜市', desc: '济州市观德路14街20 · 传统市场，夜市吃年糕、逛吃必去，近七星路' },
+  { name: '七星路步行街', lat: 33.5110, lng: 126.5230,
+    color: '橙', day: '购物街', desc: '济州市区步行街 · 韩女同款女装、老奶奶Kpop店、大创、中古店，邻近东门市场' },
+  { name: '涯月・汉潭海岸', lat: 33.4531, lng: 126.3217,
+    color: '红', day: 'D4 周日 10:30', desc: '西线海岸步道 · 网红咖啡厅一条街（Cafe Monsant 等）' },
+  { name: '彩虹海岸公路', lat: 33.5035, lng: 126.4540,
+    color: '红', day: 'D4 周日（可选）', desc: '道头洞彩虹海岸线 · 拍照打卡点' },
+
+  /* ===== 新增：餐饮 / 体验地点 ===== */
+  { name: '新中山间·黑猪烤肉', lat: 33.5080, lng: 126.5220,
+    color: '绿', day: '落地后午餐', desc: '机场约10分钟车程 · 黑猪肉配田螺豆腐酱 + 年糕红豆奶昔' },
+  { name: '观德亭·韩服体验', lat: 33.5100, lng: 126.5310,
+    color: '绿', day: '下午', desc: '市区古亭旁 · 韩服租借+造型 152元，附近有韩服拍照点' },
+  { name: '汉拿带鱼餐厅', lat: 33.5060, lng: 126.5200,
+    color: '棕', day: '傍晚', desc: '市区韩式料理 · 带鱼套餐 39000韩元/人，石锅饭配热汤' },
+  { name: 'M1971 游艇·追海豚', lat: 33.2235, lng: 126.2520,
+    color: '绿', day: '下午3-4点', desc: '西归浦大静邑最南端 · 游艇出海约1小时追海豚，200多元/人，可遇海女' },
+  { name: 'M1971 咖啡店', lat: 33.2235, lng: 126.2525,
+    color: '棕', day: '傍晚', desc: '与游艇同址 · 游艇俱乐部咖啡，看海休息' },
+  { name: '橘子园·黑猪烤肉', lat: 33.2880, lng: 126.3000,
+    color: '绿', day: '傍晚', desc: '橘子园旁 · 黑猪肉拼盘（法式庄园风格），靠近南线橘园' },
+
+  /* ===== 新增：Day1-4 餐饮 / 景点 ===== */
+  { name: 'BHC 炸鸡（咸德店）', lat: 33.5440, lng: 126.6600,
+    color: '棕', day: 'Day1 落地午餐', desc: '咸德海水浴场旁 · 全智贤代言连锁炸鸡，芝士炸鸡配酸奶酱' },
+  { name: 'Cafe Layered 小狗咖啡', lat: 33.5510, lng: 126.7950,
+    color: '绿', day: 'Day1 下午', desc: '旧左邑东福路85（月汀里海边）· 奶油白海景咖啡，柑橘拿铁、小狗蛋糕' },
+  { name: 'Moalboal Cafe', lat: 33.5470, lng: 126.7900,
+    color: '绿', day: 'Day1 傍晚', desc: '旧左邑旧左海岸路141 · 摩洛哥风海景咖啡，看日落' },
+  { name: 'Baro 猪蹄菜包饭', lat: 33.5090, lng: 126.5200,
+    color: '棕', day: 'Day1 晚餐', desc: '老衡洞735-8（市中心新罗免税店附近）· 烤猪蹄菜包饭 44000韩元' },
+  { name: '牛岛（Udo）', lat: 33.5030, lng: 126.9520,
+    color: '蓝', day: 'Day2 一日游', desc: '东部离岛 · 坐船/快艇上岛，白沙海滩、花生冰淇淋' },
+  { name: '城山日出峰', lat: 33.4580, lng: 126.9420,
+    color: '蓝', day: 'Day2 下午', desc: '世界自然遗产 · 火山口日出峰，登山看海' },
+  { name: '老奶奶炸酱面', lat: 33.5000, lng: 126.5220,
+    color: '棕', day: 'Day3 早餐', desc: '莲洞252-72（新罗免税店后、保健路上）· 60年老店炸酱面' },
+  { name: 'Hello Kitty Island', lat: 33.2750, lng: 126.3950,
+    color: '绿', day: 'Day3 上午', desc: '西归浦安德面翰昌路340 · 凯蒂猫主题乐园+咖啡厅，隔壁有jshop' },
+  { name: 'Hugely 橘子冰淇淋', lat: 33.5020, lng: 126.4830,
+    color: '绿', day: 'Day3 傍晚', desc: '济州市兴运路83（机场附近海边）· 橘子gelato，看日落' },
+  { name: '존맛식당 Jonmat 食堂', lat: 33.5425, lng: 126.6620,
+    color: '棕', day: '咸德附近午餐', desc: '朝天邑新北路493（咸德海水浴场旁）· 章鱼铁板、章鱼拌面/汤面，量足味香' },
+  { name: '挟才海水浴场', lat: 33.3925, lng: 126.2389,
+    color: '蓝', day: '西线海滩', desc: '翰林邑挟才里2497-1 · 果冻海+白沙滩，翡翠色海水，看日落' },
+  { name: '汉拿山（白鹿潭）', lat: 33.3617, lng: 126.5295,
+    color: '深红', day: '全岛中央 · 徒步/观景', desc: '济州最高峰1950m · 韩国第一高峰，山顶火山口湖白鹿潭，城板岳/御里牧等登山路线' },
+  { name: '正房瀑布', lat: 33.2449, lng: 126.5718,
+    color: '蓝', day: '西归浦·海岸瀑布', desc: '西归浦市七松里路214街37 · 亚洲唯一直接入海的瀑布，高23m，济州三大瀑布之一' },
+  { name: '史努比花园', lat: 33.4448, lng: 126.7792,
+    color: '绿', day: '东部·主题花园', desc: '旧左邑金白鸟路930 · 花生漫画主题花园，草坪、斯努比场景，09:00-18:00' },
+  { name: '雪绿茶博物馆', lat: 33.3056, lng: 126.2892,
+    color: '绿', day: '西线·茶园', desc: '西归浦安德面神话历史路15 · O\'Sulloc免费茶园博物馆，绿茶田+绿茶冰淇淋，09:00-18:00' },
+  { name: '山茶花之丘', lat: 33.2765, lng: 126.2918,
+    color: '绿', day: '西线·花圃', desc: '西归浦安德面並岳路166 · 山茶花园，冬季满开山茶花，08:30-18:00' },
+  { name: 'Gamttanam 橘子咖啡厅', lat: 33.2300, lng: 126.5170,
+    color: '绿', day: '西归浦·橘园咖啡', desc: '西归浦市月山路16（江汀洞）· 建在橘子园里的花园咖啡，可摘橘子，11:00-18:00 周一休' }
+];
+
+spots.forEach(function(s) {
+  var m = L.marker([s.lat, s.lng], { icon: makeSpotIcon(colorMap[s.color]) });
+  m.bindPopup(
+    '<h3>' + s.name + '</h3>' +
+    '<div class="popup-meta">★ 景点 · ' + s.day + '</div>' +
+    '<div class="popup-desc">' + s.desc + '</div>'
+  );
+  addLabel(m, s.name);
+  markers.addLayer(m);
+});
+
+map.addLayer(markers);
+
+/* ==================== 每日路线 Polyline ==================== */
+var routeLayer = L.layerGroup().addTo(map);
+
+var routes = [
+  {
+    name: 'D1 周四晚・抵达', color: '#7a5cd6',
+    waypoints: [
+      [33.5113, 126.4929], [33.5090, 126.5285], [33.5110, 126.5230],
+      [33.4988, 126.5250]
+    ]
+  },
+  {
+    name: 'D2 周五・东线牛岛→表善', color: '#1f77b4',
+    waypoints: [
+      [33.4988, 126.5250], [33.5431, 126.6696], [33.5564, 126.7956],
+      [33.4580, 126.9420], [33.4235, 126.9293], [33.5030, 126.9520],
+      [33.3260, 126.8340]
+    ]
+  },
+  {
+    name: 'D3 周六・表善→西线安德面', color: '#e67e22',
+    waypoints: [
+      [33.3260, 126.8340], [33.2449, 126.5718], [33.2370, 126.4249],
+      [33.2750, 126.3950], [33.2765, 126.2918], [33.2880, 126.3000],
+      [33.3056, 126.2892]
+    ]
+  },
+  {
+    name: 'D4 周日・西线转场', color: '#d62728',
+    waypoints: [
+      [33.3056, 126.2892], [33.3925, 126.2389], [33.4531, 126.3217],
+      [33.5035, 126.4540], [33.5035, 126.4750]
+    ]
+  },
+  {
+    name: 'D5 周一・返程', color: '#555555',
+    waypoints: [[33.5035, 126.4750], [33.5113, 126.4929]]
+  }
+];
+
+routes.forEach(function(r) {
+  var line = L.polyline(r.waypoints, {
+    color: r.color,
+    weight: 4,
+    opacity: 0.75,
+    dashArray: '8, 6',
+    lineJoin: 'round',
+    lineCap: 'round'
+  });
+  line.bindPopup('<h3>' + r.name + '</h3><div class="popup-desc">共 ' + r.waypoints.length + ' 个途经点</div>');
+  routeLayer.addLayer(line);
+});
+
+/* ==================== 图例控件 ==================== */
+var LegendControl = L.Control.extend({
+  options: { position: 'topleft' },
+  onAdd: function() {
+    var div = L.DomUtil.create('div', 'legend-panel');
+    div.innerHTML =
+      '<h4>📋 图例</h4>' +
+      '<div class="legend-row"><div class="legend-icon hotel"><span>🛏</span></div><span class="legend-text">住宿</span></div>' +
+      '<div class="legend-row"><div class="legend-icon spot" style="background:#1f77b4;">★</div><span class="legend-text">景点</span></div>' +
+      '<h4 style="margin-top:8px;">🚗 每日路线</h4>' +
+      '<div class="legend-row"><div class="legend-line" style="background:#7a5cd6;"></div><span class="legend-text">D1 抵达</span></div>' +
+      '<div class="legend-row"><div class="legend-line" style="background:#1f77b4;"></div><span class="legend-text">D2 东线牛岛→表善</span></div>' +
+      '<div class="legend-row"><div class="legend-line" style="background:#e67e22;"></div><span class="legend-text">D3 表善→西线安德面</span></div>' +
+      '<div class="legend-row"><div class="legend-line" style="background:#d62728;"></div><span class="legend-text">D4 西线转场</span></div>' +
+      '<div class="legend-row"><div class="legend-line" style="background:#555555;"></div><span class="legend-text">D5 返程</span></div>';
+    L.DomEvent.disableClickPropagation(div);
+    return div;
+  }
+});
+new LegendControl().addTo(map);
+
+/* ==================== 图层控制 ==================== */
+var overlayMaps = { '🚗 每日路线': routeLayer, '📍 地点标记': markers };
+L.control.layers(baseMaps, overlayMaps, {
+  position: 'bottomright',
+  collapsed: false
+}).addTo(map);
+
+/* ==================== 初始视野 ==================== */
+map.fitBounds([[33.2, 126.2], [33.65, 127.0]]);
+</script>
+
+</body>
+</html>
